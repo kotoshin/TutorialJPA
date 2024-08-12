@@ -51,16 +51,19 @@ public class CountryController {
 
     // ----- 削除画面 -----
     @GetMapping(value = { "/delete", "/delete/{code}/" })
-    public String deleteCountryForm(Model model) {
+    public String deleteCountryForm(@PathVariable(name = "code", required = false) String code, Model model) {
+        model.addAttribute("code", code);
         // country/delete.htmlに画面遷移
         return "country/delete";
     }
-
     // ----- 削除 -----
-    @PostMapping("/delete")
     public String deleteCountry(@RequestParam("code") String code, Model model) {
         // 削除
         service.deleteCountry(code);
+        
+        Country country = code != null ? service.getCountry(code) : new Country();
+        // Modelに登録
+        model.addAttribute("country", country);
 
         // 一覧画面にリダイレクト
         return "redirect:/country/list";
